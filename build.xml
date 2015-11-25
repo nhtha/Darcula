@@ -1,0 +1,63 @@
+<project name="Darcula LaF" default="jar" basedir=".">
+
+	<property environment="env"/>
+	<property name="version" value="1.1"/>
+	<property name="name" value="darcula"/>
+	<property name="target" value="1.6"/>
+	<property name="source" value="1.6"/>
+	<property name="source.dir" value="src"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="build.dir" value="build"/>
+
+	<path id="compile.classpath">
+		<pathelement location="${source.dir}"/>
+	    <fileset dir="${lib.dir}" id="libs">
+			<include name="iconloader.jar"/>
+	    </fileset>    
+	</path>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="." includes="${name}.jar" />
+	</target>
+
+	<target name="init" depends="clean">
+		<mkdir dir="${build.dir}"/>
+	</target>
+
+	<target name="compile" depends="init" >
+		<javac debug="true" debuglevel="source,lines,vars" destdir="${build.dir}"
+        					source="${source}" target="${target}" includeantruntime="false" >
+			<src path="${source.dir}" />
+			<exclude name="**/*Test.java" />
+			<classpath refid="compile.classpath"/>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<tstamp>
+		     <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+		</tstamp>
+		<manifest file="MANIFEST.MF">
+            <attribute name="Specification-Title" value="${name}" />
+            <attribute name="Specification-Version" value="${version}"/>
+			<attribute name="Implementation-Title" value="${name}"/>
+			<attribute name="Implementation-Version" value="${version}"/>
+			<attribute name="Built-Date" value="${TODAY}"/>
+		</manifest>
+		<jar destfile="${name}.jar" manifest="MANIFEST.MF">
+			<fileset dir="${build.dir}" id="class-files">
+				<include name="**/*.class" />
+				<exclude name="**/*Test.class" />
+			</fileset>
+			<fileset dir="${source.dir}">
+				<include name="**/*.properties" />
+				<include name="**/*.css" />
+				<include name="**/*.png" />
+				<exclude name="**/*.java" />
+			</fileset>
+		    <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
+		</jar>
+	</target>
+
+</project>
